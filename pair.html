@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>ROBIN MD Pair</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top, #6d28d9, transparent 40%),
+        linear-gradient(135deg, #090014, #18002d);
+    color: white;
+}
+
+.card {
+    width: 90%;
+    max-width: 420px;
+    padding: 35px 25px;
+    border-radius: 25px;
+    text-align: center;
+
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    backdrop-filter: blur(15px);
+
+    box-shadow: 0 0 40px rgba(168,85,247,.25);
+}
+
+.logo {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 30px;
+    background: linear-gradient(90deg,#c084fc,#f472b6);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+p {
+    color: #cbd5e1;
+    margin: 10px 0 25px;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    margin-bottom: 15px;
+
+    background: rgba(255,255,255,.1);
+    color: white;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(90deg,#9333ea,#ec4899);
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(.97);
+}
+
+#result {
+    display: none;
+    margin-top: 25px;
+}
+
+.code {
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 12px;
+
+    background: rgba(0,0,0,.35);
+    color: #f0abfc;
+
+    font-size: 25px;
+    font-weight: bold;
+    letter-spacing: 4px;
+}
+
+.loading {
+    margin-top: 20px;
+    color: #f9a8d4;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="logo">🤖</div>
+
+    <h1>ROBIN MD</h1>
+
+    <p>WhatsApp Bot Pairing</p>
+
+    <input
+        id="number"
+        type="text"
+        placeholder="947XXXXXXXX"
+    >
+
+    <button onclick="pair()">
+        🔗 GET PAIRING CODE
+    </button>
+
+    <div class="loading" id="loading"></div>
+
+    <div id="result">
+        <p>Your Pairing Code</p>
+        <div class="code" id="code"></div>
+    </div>
+
+</div>
+
+<script>
+async function pair() {
+
+    const number =
+        document.getElementById("number").value.trim();
+
+    const loading =
+        document.getElementById("loading");
+
+    const result =
+        document.getElementById("result");
+
+    const code =
+        document.getElementById("code");
+
+    if (!number) {
+        alert("Enter your WhatsApp number");
+        return;
+    }
+
+    loading.innerText = "⏳ Generating pairing code...";
+    result.style.display = "none";
+
+    try {
+
+        const response = await fetch("/pair", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                number: number
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            loading.innerText =
+                "✅ Pairing code generated!";
+
+            code.innerText = data.code;
+
+            result.style.display = "block";
+
+        } else {
+
+            loading.innerText =
+                "❌ " + data.message;
+        }
+
+    } catch (error) {
+
+        loading.innerText =
+            "❌ Server error. Try again.";
+    }
+}
+</script>
+
+</body>
+</html>
